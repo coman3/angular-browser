@@ -6,10 +6,11 @@ import { NgObjectType } from '../obj/ngObjectType';
 
 export class NgObjectTypeTreeItem extends NgTreeItem {
 
-    public static loadingTreeItem = new NgObjectTypeTreeItem(new NgObjectType('', 'Scanning...', []));
+    public static scanningTreeItem = new NgObjectTypeTreeItem(new NgObjectType('', 'Scanning...', []));
     public static noFilesTreeItem = new NgObjectTypeTreeItem(new NgObjectType('', 'No Angular files found', []));
 
     private count = 0;
+
 
     constructor(
         public readonly type: NgObjectType
@@ -17,13 +18,16 @@ export class NgObjectTypeTreeItem extends NgTreeItem {
         super(type.label, vscode.TreeItemCollapsibleState.None);
     }
 
-    setObjectCount(count: number) {
-        this.count = count;
-        this.label = this.type.label + ' (' + count + ')';
-        this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+    setLabelInfo(info: string) {
+        this.label = this.type.label + ' (' + info + ')';
     }
 
     increaseObjectCount() {
-        this.setObjectCount(this.count + 1);
+        this.count++;
+        this.setLabelInfo('' + this.count);
+
+        if (this.collapsibleState === vscode.TreeItemCollapsibleState.None) {
+            this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+        }
     }
 }

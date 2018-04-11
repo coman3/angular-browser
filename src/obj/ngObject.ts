@@ -28,8 +28,12 @@ export class NgObject {
             if (type) {
                 const scriptDir = vscode.Uri.parse(uriParts.slice(0, uriParts.length - 1).join('/'));
 
+
+
                 NgFileCollection.create(uri, name, type, scriptDir).then(
-                    collection => resolve(new NgObject(name, type, scriptDir, collection))
+                    collection => {
+                        resolve(new NgObject(name, type, scriptDir, collection));
+                    }
                 );
 
             } else {

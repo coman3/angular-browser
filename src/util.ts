@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 
 export class Util {
 
+    static startTime = new Date().getTime();
+
     public static findFile(glob: string): Promise<vscode.Uri> {
         return new Promise((resolve, reject) => {
             const searchPaths: string[] | undefined = vscode.workspace.getConfiguration('angularExplorer').get('searchLocations');
@@ -20,15 +22,19 @@ export class Util {
 
     public static findFiles(glob: string): Promise<vscode.Uri[]> {
         return new Promise((resolve, reject) => {
-            const searchPaths: string[] | undefined = vscode.workspace.getConfiguration('angularExplorer').get('searchLocations');
+            // const startTime = new Date().getTime();
 
+            const searchPaths: string[] | undefined = vscode.workspace.getConfiguration('angularExplorer').get('searchLocations');
 
             let thenables: Thenable<any>[] = [];
             let files: vscode.Uri[] = [];
 
-            if (searchPaths) {
+            if (searchPaths && vscode.workspace.workspaceFolders) {
                 for (let searchPath of searchPaths) {
-                    thenables.push(vscode.workspace.findFiles(searchPath + '/**' + glob).then(
+
+                    const pattern = new vscode.RelativePattern(vscode.workspace.workspaceFolders[0].uri.fsPath + '/' + searchPath, '**' + glob);
+
+                    thenables.push(vscode.workspace.findFiles(pattern).then(
                         uris => {
                             files.push(...uris);
                         },
@@ -38,7 +44,12 @@ export class Util {
             }
 
             Promise.all(thenables).then(
-                () => resolve(files),
+                () => {
+                    resolve(files);
+
+                    // const endTime = new Date().getTime();
+                    // console.log('-> search finished (' + glob + '), found ' + files.length + ' files, needed ' + ((endTime - startTime) / 1000) + 's');
+                },
                 reason => reject(reason)
             );
         });

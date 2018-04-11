@@ -1,10 +1,15 @@
 {
     "name": "angular-explorer",
     "displayName": "Angular Explorer",
-    "description": "TreeView for Angular Components and Services with easy opening",
-    "version": "0.0.1",
+    "description": "Explorer for Angular files with quick open function",
+    "icon": "/img/logo.png",
+    "version": "0.0.2",
     "publisher": "carlowenig",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://gitlab.com/carlowenig/angular-explorer"
+    },
     "engines": {
         "vscode": "^1.21.0"
     },
@@ -19,15 +24,15 @@
         "commands": [
             {
                 "command": "angularExplorer.openScript",
-                "title": "Open Script (.ts)"
+                "title": "Open Script-File (.ts)"
             },
             {
                 "command": "angularExplorer.openTemplate",
-                "title": "Open Template (.html)"
+                "title": "Open Template-File (.html)"
             },
             {
                 "command": "angularExplorer.openStyles",
-                "title": "Open Style(s) (.css/.scss)"
+                "title": "Open Style-File(s) (.css/.scss)"
             },
             {
                 "command": "angularExplorer.openSpec",

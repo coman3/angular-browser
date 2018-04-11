@@ -7,8 +7,6 @@ import { NgFileType } from './ngFileType';
 
 export class NgFileCollection {
 
-    //public ngObject?: NgObject;
-
     public templateUri?: vscode.Uri;
     public styleUris?: vscode.Uri[];
     public specUri?: vscode.Uri;
@@ -28,9 +26,12 @@ export class NgFileCollection {
 
             let promises: Thenable<any>[] = [];
 
+            // const startTime = new Date().getTime();
 
             // Get Decorator
             promises.push(vscode.workspace.openTextDocument(scriptUri).then(doc => {
+                // console.log('---> Opened Document of ' + name + '.' + type.identifier + ', needed ' + ((new Date().getTime() - startTime) / 1000) + 's');
+
                 const matchDecorator = doc.getText().match(/@(.*?)\s*?\([\s\n]*([^]*?)[\s\n]*?\)/);
 
                 if (matchDecorator) {
@@ -54,7 +55,6 @@ export class NgFileCollection {
                 }
             }));
 
-
             // Find Spec File
             if (type.has(NgFileType.Spec)) {
                 promises.push(this.getSpecFile(name, type.identifier, scriptDir)
@@ -63,7 +63,10 @@ export class NgFileCollection {
             }
 
             Promise.all(promises).then(
-                values => resolve(collection),
+                values => {
+                    // console.log('--> Created FileCollection of ' + name + '.' + type.identifier + ', needed ' + ((new Date().getTime() - startTime) / 1000) + 's');
+                    resolve(collection);
+                },
                 reason => reject(reason)
             );
 

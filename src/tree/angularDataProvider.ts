@@ -17,6 +17,7 @@ export class AngularDataProvider implements vscode.TreeDataProvider<NgTreeItem> 
 
     private lastCollapsibleStates = new Map<NgObjectType, vscode.TreeItemCollapsibleState>();
 
+
     constructor() {
         this.refresh();
 
@@ -69,6 +70,7 @@ export class AngularDataProvider implements vscode.TreeDataProvider<NgTreeItem> 
                 if (!items.length) {
                     items.push(NgObjectTypeTreeItem.noFilesTreeItem);
                 }
+                //console.log('-> Show Children (' + (new Date().getTime() - Util.startTime) + 'ms)');
                 resolve(items);
             }
         });
@@ -82,10 +84,16 @@ export class AngularDataProvider implements vscode.TreeDataProvider<NgTreeItem> 
     }
 
     private loadNgObjectTreeItemsByType(type: NgObjectType) {
+        this.ngObjectTypeTreeItems.clear();
         this.setScanningEnabled(true);
+
+        //console.log('-> Start Script Search (' + (new Date().getTime() - Util.startTime) + 'ms)');
 
         Util.findFiles('/*.' + type.identifier + '.ts').then(uris => {
             this.ngObjectTreeItems.set(type, []);
+
+            //console.log('-> Start Object Initialization (' + (new Date().getTime() - Util.startTime) + 'ms)');
+
 
             if (!uris.length) {
                 this._onDidChangeTreeData.fire();
@@ -113,7 +121,7 @@ export class AngularDataProvider implements vscode.TreeDataProvider<NgTreeItem> 
                             this.ngObjectTypeTreeItems.forEach((val, key) => {
                                 this.lastCollapsibleStates.set(key, val.collapsibleState);
                             });
-                            this._onDidChangeTreeData.fire();
+                            //this._onDidChangeTreeData.fire();
                         }
                     },
                     reason => console.log(reason)
@@ -121,7 +129,10 @@ export class AngularDataProvider implements vscode.TreeDataProvider<NgTreeItem> 
             }
 
             Promise.all(promises).then(
-                value => this.setScanningEnabled(false)
+                value => {
+                    this.setScanningEnabled(false);
+                    // console.log('-> Finished Object Initialization of ' + type.label + ' (' + (new Date().getTime() - Util.startTime) + 'ms)');
+                }
             );
         }).catch(
             reason => {
@@ -132,10 +143,9 @@ export class AngularDataProvider implements vscode.TreeDataProvider<NgTreeItem> 
 
     private setScanningEnabled(enabled: boolean) {
         if (enabled) {
-            this.ngObjectTypeTreeItems.clear();
-            this.ngObjectTypeTreeItems.set(NgObjectTypeTreeItem.loadingTreeItem.type, NgObjectTypeTreeItem.loadingTreeItem);
+            this.ngObjectTypeTreeItems.set(NgObjectTypeTreeItem.scanningTreeItem.type, NgObjectTypeTreeItem.scanningTreeItem);
         } else {
-            this.ngObjectTypeTreeItems.delete(NgObjectTypeTreeItem.loadingTreeItem.type);
+            this.ngObjectTypeTreeItems.delete(NgObjectTypeTreeItem.scanningTreeItem.type);
         }
         this._onDidChangeTreeData.fire();
     }

@@ -7,7 +7,6 @@ import { NgFileCollection } from './obj/ngFileCollection';
 
 export function activate(context: vscode.ExtensionContext) {
 
-
     const angularDataProvider = new AngularDataProvider();
 
     vscode.window.registerTreeDataProvider('angularExplorer', angularDataProvider);
